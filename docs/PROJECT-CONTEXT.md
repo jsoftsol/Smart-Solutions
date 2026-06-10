@@ -121,7 +121,7 @@ Dashboard → Print Orders → Haier Jobs → Expenses → Reports → [separato
 ## Session Log
 
 ```
-2026-06-10 — README.md and PROJECT-CONTEXT.md created for GitHub portfolio; screenshots committed
+2026-06-10 — GitHub portfolio setup: README.md, PROJECT-CONTEXT.md, screenshots; submodule flattened into single repo; pushed to https://github.com/jsoftsol/Smart-Solutions
 2026-06-10 — Startup crash fixed (DatabaseStepControl.xaml: UseSqlAuth needed Mode=OneWay)
 2026-06-10 — MSIX packaging + first-run setup wizard complete; 28/28 tests passing
 2026-06-10 — Auth feature complete (LoginWindow, SessionService, PBKDF2-SHA256 hashing, audit trail FKs)
