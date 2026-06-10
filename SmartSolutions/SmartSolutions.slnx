@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="SmartSolutions.App/SmartSolutions.App.csproj" />
+  <Project Path="SmartSolutions.Core/SmartSolutions.Core.csproj" />
+  <Project Path="SmartSolutions.Data/SmartSolutions.Data.csproj" />
+  <Project Path="SmartSolutions.Tests/SmartSolutions.Tests.csproj" />
+</Solution>

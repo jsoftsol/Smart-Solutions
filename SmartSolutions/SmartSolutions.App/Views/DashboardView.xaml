@@ -1,0 +1,120 @@
+<!-- SmartSolutions.App/Views/DashboardView.xaml -->
+<UserControl x:Class="SmartSolutions.App.Views.DashboardView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:converters="clr-namespace:SmartSolutions.App.Converters">
+    <UserControl.Resources>
+        <converters:BoolToVisibilityConverter x:Key="BoolToVisibility"/>
+    </UserControl.Resources>
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+      <StackPanel Margin="24">
+        <TextBlock Text="Dashboard" Style="{StaticResource MaterialDesignHeadline5TextBlock}" Margin="0,0,0,8"/>
+        <TextBlock Text="{Binding ErrorMessage}" Foreground="{DynamicResource MaterialDesignValidationErrorBrush}"
+                   Margin="0,0,0,8" Visibility="{Binding HasErrorMessage, Converter={StaticResource BoolToVisibility}}"/>
+
+        <!-- Balance Cards row -->
+        <Grid Margin="0,0,0,16">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="16"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="16"/>
+            <ColumnDefinition Width="*"/>
+          </Grid.ColumnDefinitions>
+
+          <md:Card Grid.Column="0" Padding="16">
+            <StackPanel>
+              <TextBlock Text="Cash in Hand" Opacity="0.7"/>
+              <TextBlock Text="{Binding BalanceSummary.Cash, StringFormat='PKR {0:#,##0.00}'}"
+                         Style="{StaticResource MaterialDesignHeadline6TextBlock}"/>
+            </StackPanel>
+          </md:Card>
+
+          <md:Card Grid.Column="2" Padding="16">
+            <StackPanel>
+              <TextBlock Text="Easypaisa" Opacity="0.7"/>
+              <TextBlock Text="{Binding BalanceSummary.Easypaisa, StringFormat='PKR {0:#,##0.00}'}"
+                         Style="{StaticResource MaterialDesignHeadline6TextBlock}"/>
+            </StackPanel>
+          </md:Card>
+
+          <md:Card Grid.Column="4" Padding="16">
+            <StackPanel>
+              <TextBlock Text="Bank" Opacity="0.7"/>
+              <TextBlock Text="{Binding BalanceSummary.Bank, StringFormat='PKR {0:#,##0.00}'}"
+                         Style="{StaticResource MaterialDesignHeadline6TextBlock}"/>
+            </StackPanel>
+          </md:Card>
+        </Grid>
+
+        <!-- Day Book + Outstanding side by side -->
+        <Grid Margin="0,0,0,16">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="16"/>
+            <ColumnDefinition Width="*"/>
+          </Grid.ColumnDefinitions>
+
+          <!-- Day Book -->
+          <md:Card Grid.Column="0" Padding="16">
+            <StackPanel>
+              <TextBlock Text="Day Book" Style="{StaticResource MaterialDesignSubtitle1TextBlock}" Margin="0,0,0,8"/>
+              <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                <DatePicker SelectedDate="{Binding DayBookDate}" Width="140" Margin="0,0,8,0"/>
+                <Button Content="Refresh" Command="{Binding RefreshDayBookCommand}"
+                        Style="{StaticResource MaterialDesignOutlinedButton}"/>
+              </StackPanel>
+              <DataGrid ItemsSource="{Binding DayBookEntries}"
+                        AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True" MaxHeight="300">
+                <DataGrid.Columns>
+                  <DataGridTextColumn Header="Description" Binding="{Binding Description}" Width="*"/>
+                  <DataGridTextColumn Header="Amount"      Binding="{Binding Amount, StringFormat='PKR {0:#,##0.00}'}" Width="120"/>
+                  <DataGridTextColumn Header="Channel"     Binding="{Binding Channel}" Width="90"/>
+                  <DataGridTextColumn Header="Type"        Binding="{Binding Type}" Width="70"/>
+                </DataGrid.Columns>
+              </DataGrid>
+            </StackPanel>
+          </md:Card>
+
+          <!-- Outstanding Balances -->
+          <md:Card Grid.Column="2" Padding="16">
+            <StackPanel>
+              <TextBlock Text="Outstanding Balances" Style="{StaticResource MaterialDesignSubtitle1TextBlock}" Margin="0,0,0,8"/>
+              <DataGrid ItemsSource="{Binding OutstandingItems}"
+                        AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True" MaxHeight="300">
+                <DataGrid.Columns>
+                  <DataGridTextColumn Header="Order/Job" Binding="{Binding Label}" Width="120"/>
+                  <DataGridTextColumn Header="Customer"  Binding="{Binding Customer}" Width="*"/>
+                  <DataGridTextColumn Header="Balance"   Binding="{Binding Balance, StringFormat='PKR {0:#,##0.00}'}" Width="120"/>
+                </DataGrid.Columns>
+              </DataGrid>
+            </StackPanel>
+          </md:Card>
+        </Grid>
+
+        <!-- Monthly Snapshot -->
+        <md:Card Padding="16">
+          <StackPanel>
+            <TextBlock Text="Monthly Snapshot" Style="{StaticResource MaterialDesignSubtitle1TextBlock}" Margin="0,0,0,8"/>
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+              <TextBox md:HintAssist.Hint="Month (1-12)" Text="{Binding SelectedMonth, UpdateSourceTrigger=PropertyChanged}" Width="80" Margin="0,0,8,0"/>
+              <TextBox md:HintAssist.Hint="Year"         Text="{Binding SelectedYear,  UpdateSourceTrigger=PropertyChanged}" Width="80" Margin="0,0,8,0"/>
+              <Button Content="Go" Command="{Binding RefreshMonthlyCommand}" Style="{StaticResource MaterialDesignOutlinedButton}"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+              <TextBlock Text="{Binding MonthlySummary.TotalIncome,   StringFormat='Income: PKR {0:#,##0.00}'}"   Margin="0,0,32,0" FontSize="14"/>
+              <TextBlock Text="{Binding MonthlySummary.TotalExpenses, StringFormat='Expenses: PKR {0:#,##0.00}'}" Margin="0,0,32,0" FontSize="14"/>
+              <TextBlock Text="{Binding MonthlySummary.Profit,        StringFormat='Profit: PKR {0:#,##0.00}'}"   FontSize="14" FontWeight="Bold"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+              <TextBlock Text="{Binding MonthlySummary.Balances.Cash,      StringFormat='Cash: PKR {0:#,##0.00}'}"      Margin="0,0,24,0" Opacity="0.7"/>
+              <TextBlock Text="{Binding MonthlySummary.Balances.Easypaisa, StringFormat='Easypaisa: PKR {0:#,##0.00}'}" Margin="0,0,24,0" Opacity="0.7"/>
+              <TextBlock Text="{Binding MonthlySummary.Balances.Bank,      StringFormat='Bank: PKR {0:#,##0.00}'}"      Opacity="0.7"/>
+            </StackPanel>
+          </StackPanel>
+        </md:Card>
+
+      </StackPanel>
+    </ScrollViewer>
+</UserControl>

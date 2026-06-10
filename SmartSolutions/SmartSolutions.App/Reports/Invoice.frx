@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Report ReportInfo.Created="06/09/2026 00:00:00" ReportInfo.Modified="06/09/2026 00:00:00" ReportInfo.CreatorVersion="2026.2.1">
+  <Dictionary>
+    <Parameter Name="OrderId"               DataType="Int32"/>
+    <Parameter Name="OrderDate"             DataType="String"/>
+    <Parameter Name="CustomerName"          DataType="String"/>
+    <Parameter Name="CustomerAddress"       DataType="String"/>
+    <Parameter Name="BizName"               DataType="String"/>
+    <Parameter Name="BizNtn"                DataType="String"/>
+    <Parameter Name="BizAddress"            DataType="String"/>
+    <Parameter Name="BizPhone1"             DataType="String"/>
+    <Parameter Name="BizPhone2"             DataType="String"/>
+    <Parameter Name="BizEmail"              DataType="String"/>
+    <Parameter Name="Subtotal"              DataType="Decimal"/>
+    <Parameter Name="TransportationCharges" DataType="Decimal"/>
+    <Parameter Name="OrderTotal"            DataType="Decimal"/>
+    <Parameter Name="TotalPaid"             DataType="Decimal"/>
+    <Parameter Name="Balance"               DataType="Decimal"/>
+    <TableDataSource Name="Lines" ReferenceName="Lines">
+      <Column Name="No"          DataType="Int32"/>
+      <Column Name="Description" DataType="String"/>
+      <Column Name="Qty"         DataType="Int32"/>
+      <Column Name="Rate"        DataType="Decimal"/>
+      <Column Name="Total"       DataType="Decimal"/>
+    </TableDataSource>
+  </Dictionary>
+  <ReportPage Name="Page1" Landscape="false" PaperWidth="210" PaperHeight="297" TopMargin="10" BottomMargin="10" LeftMargin="10" RightMargin="10">
+    <ReportTitleBand Name="ReportTitle1" Top="0" Width="190" Height="30">
+      <TextObject Name="txtBizName" Left="0"   Top="0"  Width="130" Height="10" Text="[BizName]" Font="Arial, 14pt, Bold"/>
+      <TextObject Name="txtNtn"     Left="130" Top="0"  Width="60"  Height="10" Text="NTN: [BizNtn]" HorzAlign="Right"/>
+      <TextObject Name="txtTitle"   Left="0"   Top="10" Width="190" Height="10" Text="INVOICE" Font="Arial, 14pt, Bold" HorzAlign="Center"/>
+      <TextObject Name="txtOrderId" Left="0"   Top="20" Width="95"  Height="8"  Text="Serial No: [OrderId]"/>
+      <TextObject Name="txtDate"    Left="95"  Top="20" Width="95"  Height="8"  Text="Date: [OrderDate]" HorzAlign="Right"/>
+    </ReportTitleBand>
+    <PageHeaderBand Name="PageHeader1" Top="32" Width="190" Height="12">
+      <TextObject Name="hNo"    Left="0"   Top="0" Width="10"  Height="10" Text="No"          Font="Arial, 8pt, Bold"/>
+      <TextObject Name="hDesc"  Left="10"  Top="0" Width="100" Height="10" Text="Description" Font="Arial, 8pt, Bold"/>
+      <TextObject Name="hQty"   Left="110" Top="0" Width="20"  Height="10" Text="Qty"         Font="Arial, 8pt, Bold" HorzAlign="Right"/>
+      <TextObject Name="hRate"  Left="130" Top="0" Width="30"  Height="10" Text="Rate"        Font="Arial, 8pt, Bold" HorzAlign="Right"/>
+      <TextObject Name="hTotal" Left="160" Top="0" Width="30"  Height="10" Text="Total RS"    Font="Arial, 8pt, Bold" HorzAlign="Right"/>
+    </PageHeaderBand>
+    <DataBand Name="Data1" Top="46" Width="190" Height="10" DataSource="Lines">
+      <TextObject Name="dNo"    Left="0"   Top="0" Width="10"  Height="10" Text="[Lines.No]"/>
+      <TextObject Name="dDesc"  Left="10"  Top="0" Width="100" Height="10" Text="[Lines.Description]"/>
+      <TextObject Name="dQty"   Left="110" Top="0" Width="20"  Height="10" Text="[Lines.Qty]"   HorzAlign="Right"/>
+      <TextObject Name="dRate"  Left="130" Top="0" Width="30"  Height="10" Text="[Lines.Rate]"  HorzAlign="Right" Format="Currency" FormatDecimalDigits="2"/>
+      <TextObject Name="dTotal" Left="160" Top="0" Width="30"  Height="10" Text="[Lines.Total]" HorzAlign="Right" Format="Currency" FormatDecimalDigits="2"/>
+    </DataBand>
+    <ReportSummaryBand Name="ReportSummary1" Top="58" Width="190" Height="30">
+      <TextObject Name="txtSubtotal" Left="0" Top="0"  Width="190" Height="8" Text="Subtotal: PKR [Subtotal]"       HorzAlign="Right"/>
+      <TextObject Name="txtTotal"    Left="0" Top="8"  Width="190" Height="8" Text="Total: PKR [OrderTotal]"        HorzAlign="Right" Font="Arial, 10pt, Bold"/>
+      <TextObject Name="txtPaid"     Left="0" Top="16" Width="190" Height="8" Text="Paid: PKR [TotalPaid]"          HorzAlign="Right"/>
+      <TextObject Name="txtBalance"  Left="0" Top="24" Width="190" Height="8" Text="Balance: PKR [Balance]"         HorzAlign="Right" Font="Arial, 10pt, Bold"/>
+    </ReportSummaryBand>
+  </ReportPage>
+</Report>

@@ -1,0 +1,61 @@
+<UserControl x:Class="SmartSolutions.App.Views.SettingsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes">
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+      <StackPanel Margin="24" MaxWidth="640">
+
+        <TextBlock Text="Settings" Style="{StaticResource MaterialDesignHeadline5TextBlock}" Margin="0,0,0,24"/>
+
+        <!-- Business Info -->
+        <md:Card Padding="16">
+          <StackPanel>
+            <TextBlock Text="Business Information" Style="{StaticResource MaterialDesignSubtitle1TextBlock}" Margin="0,0,0,16"/>
+            <Grid>
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="16"/>
+                <ColumnDefinition Width="*"/>
+              </Grid.ColumnDefinitions>
+              <StackPanel Grid.Column="0">
+                <TextBox md:HintAssist.Hint="Business Name"
+                         Text="{Binding BusinessInfo.Name, UpdateSourceTrigger=PropertyChanged}"
+                         Margin="0,0,0,12"/>
+                <TextBox md:HintAssist.Hint="NTN"
+                         Text="{Binding BusinessInfo.Ntn, UpdateSourceTrigger=PropertyChanged}"
+                         Margin="0,0,0,12"/>
+                <TextBox md:HintAssist.Hint="Address"
+                         Text="{Binding BusinessInfo.Address, UpdateSourceTrigger=PropertyChanged}"
+                         Margin="0,0,0,12"
+                         AcceptsReturn="True"
+                         TextWrapping="Wrap"
+                         MinLines="2"/>
+              </StackPanel>
+              <StackPanel Grid.Column="2">
+                <TextBox md:HintAssist.Hint="Phone 1"
+                         Text="{Binding BusinessInfo.Phone1, UpdateSourceTrigger=PropertyChanged}"
+                         Margin="0,0,0,12"/>
+                <TextBox md:HintAssist.Hint="Phone 2"
+                         Text="{Binding BusinessInfo.Phone2, UpdateSourceTrigger=PropertyChanged}"
+                         Margin="0,0,0,12"/>
+                <TextBox md:HintAssist.Hint="Email"
+                         Text="{Binding BusinessInfo.Email, UpdateSourceTrigger=PropertyChanged}"
+                         Margin="0,0,0,12"/>
+              </StackPanel>
+            </Grid>
+            <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+              <Button Content="Save Business Info"
+                      Command="{Binding SaveBusinessInfoCommand}"
+                      Style="{StaticResource MaterialDesignRaisedButton}"
+                      Margin="0,0,16,0"
+/>
+              <TextBlock Text="{Binding StatusMessage}"
+                         VerticalAlignment="Center"
+                         Opacity="0.7"/>
+            </StackPanel>
+          </StackPanel>
+        </md:Card>
+
+      </StackPanel>
+    </ScrollViewer>
+</UserControl>

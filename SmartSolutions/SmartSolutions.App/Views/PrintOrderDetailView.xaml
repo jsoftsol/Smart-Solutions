@@ -1,0 +1,240 @@
+<!-- SmartSolutions.App/Views/PrintOrderDetailView.xaml -->
+<UserControl x:Class="SmartSolutions.App.Views.PrintOrderDetailView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
+             xmlns:converters="clr-namespace:SmartSolutions.App.Converters"
+             xmlns:entities="clr-namespace:SmartSolutions.Data.Entities;assembly=SmartSolutions.Data"
+             xmlns:h="clr-namespace:SmartSolutions.App.Helpers">
+    <UserControl.Resources>
+        <converters:CurrencyConverter                x:Key="CurrencyConverter"/>
+        <converters:RateTypeToVisibilityConverter    x:Key="RateTypeToVisibility"/>
+        <converters:BoolToVisibilityConverter        x:Key="BoolToVisibility"/>
+        <converters:InverseBoolToVisibilityConverter x:Key="InverseBoolToVisibility"/>
+
+        <x:Array x:Key="PrintOrderStatusValues" Type="{x:Type entities:PrintOrderStatus}">
+            <entities:PrintOrderStatus>Draft</entities:PrintOrderStatus>
+            <entities:PrintOrderStatus>Confirmed</entities:PrintOrderStatus>
+            <entities:PrintOrderStatus>SentToVendor</entities:PrintOrderStatus>
+            <entities:PrintOrderStatus>Ready</entities:PrintOrderStatus>
+            <entities:PrintOrderStatus>Delivered</entities:PrintOrderStatus>
+        </x:Array>
+
+        <x:Array x:Key="RateTypeValues" Type="{x:Type entities:RateType}">
+            <entities:RateType>PerSqft</entities:RateType>
+            <entities:RateType>PerPiece</entities:RateType>
+        </x:Array>
+
+        <x:Array x:Key="DimensionUnitValues" Type="{x:Type entities:DimensionUnit}">
+            <entities:DimensionUnit>Feet</entities:DimensionUnit>
+            <entities:DimensionUnit>Inches</entities:DimensionUnit>
+        </x:Array>
+    </UserControl.Resources>
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+      <StackPanel Margin="24" MaxWidth="1100">
+
+        <!-- Header bar -->
+        <Grid Margin="0,0,0,16">
+            <Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+            <Button Grid.Column="0" Content="← Back" Command="{Binding GoBackCommand}" Style="{StaticResource MaterialDesignFlatButton}"/>
+            <Button Grid.Column="1" Content="Print Invoice" Command="{Binding PrintInvoiceCommand}"
+                    Style="{StaticResource MaterialDesignOutlinedButton}" Margin="8,0,0,0"/>
+            <TextBlock Grid.Column="2" Text="{Binding OrderId, StringFormat='Print Order #{0}'}"
+                       Style="{StaticResource MaterialDesignHeadline6TextBlock}" VerticalAlignment="Center" Margin="8,0"/>
+        </Grid>
+
+        <!-- Error message -->
+        <TextBlock Text="{Binding ErrorMessage}" Foreground="{DynamicResource MaterialDesignValidationErrorBrush}"
+                   Margin="0,0,0,8" Visibility="{Binding HasError, Converter={StaticResource BoolToVisibility}}"/>
+
+        <!-- Order Header Card -->
+        <md:Card Padding="16" Margin="0,0,0,16">
+          <Grid>
+            <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="16"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+            <StackPanel Grid.Column="0">
+              <TextBox md:HintAssist.Hint="Customer (type to search) *"
+                       Text="{Binding CustomerSearch, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,4"/>
+              <ItemsControl ItemsSource="{Binding CustomerSuggestions}" MaxHeight="120" Margin="0,0,0,4"
+                            Visibility="{Binding HasCustomerSuggestions, Converter={StaticResource BoolToVisibility}}">
+                <ItemsControl.ItemTemplate>
+                  <DataTemplate>
+                    <Button Content="{Binding Name}"
+                            Command="{Binding DataContext.SelectCustomerCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                            CommandParameter="{Binding}"
+                            Style="{StaticResource MaterialDesignFlatButton}"
+                            HorizontalAlignment="Left"/>
+                  </DataTemplate>
+                </ItemsControl.ItemTemplate>
+              </ItemsControl>
+              <Button Content="+ Create customer with this name" Command="{Binding CreateCustomerInlineCommand}"
+                      Style="{StaticResource MaterialDesignFlatButton}" HorizontalAlignment="Left"/>
+              <DatePicker md:HintAssist.Hint="Order Date *" SelectedDate="{Binding OrderDate}" Margin="0,8,0,0"/>
+            </StackPanel>
+            <StackPanel Grid.Column="2">
+              <ComboBox md:HintAssist.Hint="Status" SelectedItem="{Binding OrderStatus}"
+                        ItemsSource="{StaticResource PrintOrderStatusValues}" Margin="0,0,0,8"/>
+              <TextBox md:HintAssist.Hint="Transportation Charges (optional)"
+                       Text="{Binding TransportationCharges, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,8"
+                       h:PositiveDecimalBehavior.Enabled="True"/>
+              <TextBox md:HintAssist.Hint="Notes" Text="{Binding OrderNotes, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,8"/>
+              <Button Content="Save Header" Command="{Binding SaveOrderCommand}"
+                      Style="{StaticResource MaterialDesignRaisedButton}" HorizontalAlignment="Left"/>
+            </StackPanel>
+          </Grid>
+        </md:Card>
+
+        <!-- Line Items Card -->
+        <md:Card Padding="16" Margin="0,0,0,16">
+          <StackPanel>
+            <TextBlock Text="Line Items" Style="{StaticResource MaterialDesignSubtitle1TextBlock}" Margin="0,0,0,8"/>
+
+            <!-- New line entry row -->
+            <Grid Margin="0,0,0,8">
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="150"/>
+                <ColumnDefinition Width="150"/>
+                <ColumnDefinition Width="100"/>
+                <ColumnDefinition Width="80"/>
+                <ColumnDefinition Width="80"/>
+                <ColumnDefinition Width="80"/>
+                <ColumnDefinition Width="60"/>
+                <ColumnDefinition Width="100"/>
+                <ColumnDefinition Width="Auto"/>
+              </Grid.ColumnDefinitions>
+              <ComboBox Grid.Column="0" md:HintAssist.Hint="Category"
+                        ItemsSource="{Binding ItemCategories}" SelectedItem="{Binding NewLineCategory}"
+                        DisplayMemberPath="Name" Margin="0,0,4,0"/>
+              <ComboBox Grid.Column="1" md:HintAssist.Hint="Item"
+                        ItemsSource="{Binding ItemNames}" SelectedItem="{Binding NewLineItemName}"
+                        DisplayMemberPath="Name" Margin="0,0,4,0"/>
+              <ComboBox Grid.Column="2" md:HintAssist.Hint="Rate Type"
+                        SelectedItem="{Binding NewLineRateType}"
+                        ItemsSource="{StaticResource RateTypeValues}" Margin="0,0,4,0"/>
+              <ComboBox Grid.Column="3" md:HintAssist.Hint="Unit"
+                        SelectedItem="{Binding NewLineUnit}"
+                        ItemsSource="{StaticResource DimensionUnitValues}" Margin="0,0,4,0"
+                        Visibility="{Binding NewLineDimensionsVisible, Converter={StaticResource BoolToVisibility}}"/>
+              <TextBox Grid.Column="4" md:HintAssist.Hint="H"
+                       Text="{Binding NewLineHeight, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,4,0"
+                       Visibility="{Binding NewLineDimensionsVisible, Converter={StaticResource BoolToVisibility}}"
+                       h:PositiveDecimalBehavior.Enabled="True"/>
+              <TextBox Grid.Column="5" md:HintAssist.Hint="W"
+                       Text="{Binding NewLineWidth, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,4,0"
+                       Visibility="{Binding NewLineDimensionsVisible, Converter={StaticResource BoolToVisibility}}"
+                       h:PositiveDecimalBehavior.Enabled="True"/>
+              <TextBox Grid.Column="6" md:HintAssist.Hint="Qty"
+                       Text="{Binding NewLineQuantity, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,4,0"
+                       h:PositiveDecimalBehavior.Enabled="True"/>
+              <TextBox Grid.Column="7" md:HintAssist.Hint="Rate"
+                       Text="{Binding NewLineRate, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,4,0"
+                       h:PositiveDecimalBehavior.Enabled="True"/>
+              <Button  Grid.Column="8" Content="Add Line" Command="{Binding AddLineCommand}"
+                       Style="{StaticResource MaterialDesignRaisedButton}"/>
+            </Grid>
+            <TextBlock Text="{Binding NewLineComputedTotal, StringFormat='Preview Total: PKR {0:#,##0.00}'}"
+                       Opacity="0.7" Margin="0,0,0,8"/>
+
+            <!-- Lines DataGrid -->
+            <DataGrid ItemsSource="{Binding Lines}" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True">
+              <DataGrid.Columns>
+                <DataGridTextColumn Header="Item"  Binding="{Binding ItemName.Name}" Width="*"/>
+                <DataGridTextColumn Header="Type"  Binding="{Binding RateType}" Width="80"/>
+                <DataGridTextColumn Header="Unit"  Binding="{Binding Unit}" Width="60"/>
+                <DataGridTextColumn Header="H"     Binding="{Binding Height}" Width="60"/>
+                <DataGridTextColumn Header="W"     Binding="{Binding Width}" Width="60"/>
+                <DataGridTextColumn Header="Qty"   Binding="{Binding Quantity}" Width="60"/>
+                <DataGridTextColumn Header="Rate"  Binding="{Binding Rate, StringFormat='PKR {0:#,##0.00}'}" Width="100"/>
+                <DataGridTemplateColumn Header="" Width="60">
+                  <DataGridTemplateColumn.CellTemplate>
+                    <DataTemplate>
+                      <Button Content="✕" Command="{Binding DataContext.DeleteLineCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                              CommandParameter="{Binding}" Style="{StaticResource MaterialDesignFlatButton}"/>
+                    </DataTemplate>
+                  </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+              </DataGrid.Columns>
+            </DataGrid>
+
+            <!-- Order total summary -->
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,8,0,0">
+              <TextBlock Text="{Binding OrderTotal, StringFormat='Order Total: PKR {0:#,##0.00}'}" FontWeight="Bold" Margin="0,0,24,0"/>
+              <TextBlock Text="{Binding TotalPaid,  StringFormat='Paid: PKR {0:#,##0.00}'}"        Margin="0,0,24,0"/>
+              <TextBlock Text="{Binding Balance,    StringFormat='Balance: PKR {0:#,##0.00}'}"     FontWeight="Bold"/>
+            </StackPanel>
+          </StackPanel>
+        </md:Card>
+
+        <!-- Vendor Assignment Card -->
+        <md:Card Padding="16" Margin="0,0,0,16">
+          <StackPanel>
+            <TextBlock Text="Vendor Assignment" Style="{StaticResource MaterialDesignSubtitle1TextBlock}" Margin="0,0,0,8"/>
+            <Grid>
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="200"/>
+                <ColumnDefinition Width="130"/>
+                <ColumnDefinition Width="130"/>
+                <ColumnDefinition Width="130"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+              </Grid.ColumnDefinitions>
+              <ComboBox Grid.Column="0" md:HintAssist.Hint="Vendor" ItemsSource="{Binding Vendors}"
+                        SelectedItem="{Binding SelectedVendor}" DisplayMemberPath="Name" Margin="0,0,8,0"/>
+              <DatePicker Grid.Column="1" md:HintAssist.Hint="Sent Date"     SelectedDate="{Binding VendorSentDate}"     Margin="0,0,8,0"/>
+              <DatePicker Grid.Column="2" md:HintAssist.Hint="Expected Date" SelectedDate="{Binding VendorExpectedDate}" Margin="0,0,8,0"/>
+              <TextBox    Grid.Column="3" md:HintAssist.Hint="Vendor Cost"   Text="{Binding VendorCost, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,8,0"
+                          h:PositiveDecimalBehavior.Enabled="True"/>
+              <Button     Grid.Column="4" Content="Save" Command="{Binding SaveVendorAssignmentCommand}"
+                          Style="{StaticResource MaterialDesignOutlinedButton}" Margin="0,0,8,0"/>
+              <Button     Grid.Column="5" Content="Mark Paid" Command="{Binding MarkVendorPaidCommand}"
+                          Style="{StaticResource MaterialDesignOutlinedButton}"/>
+            </Grid>
+          </StackPanel>
+        </md:Card>
+
+        <!-- Payments Card -->
+        <md:Card Padding="16">
+          <StackPanel>
+            <TextBlock Text="Customer Payments" Style="{StaticResource MaterialDesignSubtitle1TextBlock}" Margin="0,0,0,8"/>
+            <TextBlock Text="{Binding DuplicatePaymentWarning}"
+                       Foreground="Orange" Margin="0,0,0,8"
+                       Visibility="{Binding HasDuplicateWarning, Converter={StaticResource BoolToVisibility}}"/>
+            <Grid Margin="0,0,0,8">
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="130"/>
+                <ColumnDefinition Width="180"/>
+                <ColumnDefinition Width="130"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+              </Grid.ColumnDefinitions>
+              <TextBox  Grid.Column="0" md:HintAssist.Hint="Amount *" Text="{Binding NewPaymentAmount, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,8,0"
+                        h:PositiveDecimalBehavior.Enabled="True"/>
+              <ComboBox Grid.Column="1" md:HintAssist.Hint="Channel *" ItemsSource="{Binding PaymentChannels}"
+                        SelectedItem="{Binding NewPaymentChannel}" DisplayMemberPath="Name" Margin="0,0,8,0"/>
+              <DatePicker Grid.Column="2" md:HintAssist.Hint="Date" SelectedDate="{Binding NewPaymentDate}" Margin="0,0,8,0"/>
+              <TextBox  Grid.Column="3" md:HintAssist.Hint="Notes"   Text="{Binding NewPaymentNotes, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,8,0"/>
+              <Button   Grid.Column="4" Content="Add Payment" Command="{Binding AddPaymentCommand}"
+                        Style="{StaticResource MaterialDesignRaisedButton}"/>
+            </Grid>
+            <DataGrid ItemsSource="{Binding Payments}" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True">
+              <DataGrid.Columns>
+                <DataGridTextColumn Header="Date"    Binding="{Binding Date, StringFormat=dd/MM/yyyy}" Width="100"/>
+                <DataGridTextColumn Header="Amount"  Binding="{Binding Amount, StringFormat='PKR {0:#,##0.00}'}" Width="130"/>
+                <DataGridTextColumn Header="Channel" Binding="{Binding Channel.Name}" Width="120"/>
+                <DataGridTextColumn Header="Notes"   Binding="{Binding Notes}" Width="*"/>
+                <DataGridTemplateColumn Header="" Width="60">
+                  <DataGridTemplateColumn.CellTemplate>
+                    <DataTemplate>
+                      <Button Content="✕" Command="{Binding DataContext.DeletePaymentCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                              CommandParameter="{Binding}" Style="{StaticResource MaterialDesignFlatButton}"/>
+                    </DataTemplate>
+                  </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+              </DataGrid.Columns>
+            </DataGrid>
+          </StackPanel>
+        </md:Card>
+
+      </StackPanel>
+    </ScrollViewer>
+</UserControl>
