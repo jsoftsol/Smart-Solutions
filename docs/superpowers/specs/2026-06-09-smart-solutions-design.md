@@ -1,7 +1,7 @@
 # Smart Solutions — Record Keeping App
 ## Product Requirements Document (PRD)
 **Date:** 2026-06-09
-**Version:** 1.1 (all open items resolved 2026-06-09)
+**Version:** 1.2 (dedicated management pages added 2026-06-10)
 
 ---
 
@@ -64,25 +64,28 @@ Desktop record-keeping application for **Smart Solutions**, Peshawar, Pakistan (
 
 ## 6. Deployment
 
-- One PC on the local network hosts SQL Server Express 2022 and acts as the database server.
-- All other PCs install the app and connect via a connection string stored in `appsettings.json`.
+- The app is distributed as a sideloadable `.msix` package signed with a self-signed certificate.
+- Each PC must have the `SmartSolutions.cer` certificate installed to the Trusted Root store before installing (one-time, see `docs/INSTALL.md`).
+- On first launch, a **Setup Wizard** runs before the login screen. It collects: SQL Server connection details, business information (name, NTN, address, phone — used on invoices), and a new admin PIN.
+- The connection string is written to `%LOCALAPPDATA%\SmartSolutions\appsettings.json` on each PC. The MSIX install directory is read-only; this path is always writable.
+- To reconfigure the database on a PC, delete `%LOCALAPPDATA%\SmartSolutions\appsettings.json` and relaunch.
 - No internet connection required.
-- App runs on Windows 10/11.
+- App runs on Windows 10 (build 17763+) and Windows 11.
 
 ---
 
 ## 7. Data Model
 
-### 7.1 Lookup Tables (all user-managed via Settings — nothing hardcoded)
+### 7.1 Lookup Tables (all user-managed via dedicated sidebar pages — nothing hardcoded)
 
-| Table | Key Fields |
-|-------|-----------|
-| ItemCategory | Id, Name |
-| ItemName | Id, Name, CategoryId |
-| Vendor | Id, Name, Phone, Notes |
-| Technician | Id, Name, Phone |
-| ExpenseCategory | Id, Name |
-| PaymentChannel | Id, Name (initial defaults: Cash, Easypaisa, Bank) |
+| Table | Key Fields | Managed Via |
+|-------|-----------|-------------|
+| ItemCategory | Id, Name | Items page |
+| ItemName | Id, Name, CategoryId | Items page |
+| Vendor | Id, Name, Phone, Notes | Vendors page |
+| Technician | Id, Name, Phone | Technicians page |
+| ExpenseCategory | Id, Name | Expense Categories page |
+| PaymentChannel | Id, Name (initial defaults: Cash, Easypaisa, Bank) | Payment Channels page |
 
 ### 7.2 Customer
 
@@ -261,17 +264,15 @@ Draft → Confirmed → Sent to Vendor → Ready → Delivered
 
 ### 8.5 Settings
 
+Settings contains only:
+
 | Section | Managed Items |
 |---------|--------------|
-| Item Categories | Add, rename, delete |
-| Item Names | Add, rename, delete (linked to category) |
-| Vendors | Add, edit, delete (name, phone, notes) |
-| Technicians | Add, edit, delete (name, phone) |
-| Expense Categories | Add, rename, delete |
-| Payment Channels | Add, rename, delete |
 | Business Info | Name, NTN, address, phones, email, logo (used on invoices) |
-| Users | Add user (username + PIN), reset PIN, deactivate/reactivate |
-| Database | Connection string configuration for LAN setup |
+
+> **Note:** Database connection string is configured via the first-run Setup Wizard (stored in `%LOCALAPPDATA%\SmartSolutions\appsettings.json`). It is not editable from within the app after first run. To reconfigure, delete the file and relaunch.
+
+All lookup table management (items, vendors, technicians, expense categories, payment channels, users) has moved to dedicated pages accessible from the sidebar.
 
 ### 8.6 User Authentication
 
@@ -283,9 +284,90 @@ Draft → Confirmed → Sent to Vendor → Ready → Delivered
 - `LoginWindow` shown at startup before the main UI; closing it exits the app
 - App opens maximized
 
+### 8.7 Items Management Page
+
+Dedicated full-page view accessible from the sidebar. Manages item categories and their item names in a split-panel layout.
+
+**Left panel — Item Categories:**
+- DataGrid listing all categories with Edit and Delete buttons per row
+- "Add Category" button opens a popup dialog (MaterialDesign `DialogHost`) with a Name field
+- Edit button pre-fills the dialog to rename the category
+- Delete with confirmation (also deletes all item names in the category)
+
+**Right panel — Item Names (for selected category):**
+- DataGrid listing item names for the selected category with Edit and Delete buttons
+- "Add Item" button opens a popup dialog with a Name field (disabled until a category is selected)
+- Edit button pre-fills the dialog to rename the item name
+- Delete with confirmation
+
+### 8.8 Vendors Management Page
+
+Dedicated full-page view accessible from the sidebar.
+
+- DataGrid with columns: Name, Phone, Notes — with Edit and Delete buttons per row
+- "Add Vendor" button opens a popup dialog with Name (required), Phone, Notes fields
+- Edit pre-fills the dialog; Save updates the record
+- Delete with confirmation
+
+### 8.9 Technicians Management Page
+
+Dedicated full-page view accessible from the sidebar.
+
+- DataGrid with columns: Name, Phone — with Edit and Delete buttons per row
+- "Add Technician" button opens a popup dialog with Name (required) and Phone fields
+- Edit pre-fills the dialog; Save updates the record
+- Delete with confirmation
+
+### 8.10 Expense Categories Management Page
+
+Dedicated full-page view accessible from the sidebar.
+
+- DataGrid with column: Name — with Edit and Delete buttons per row
+- "Add Category" button opens a popup dialog with a Name field
+- Edit pre-fills the dialog to rename; Delete with confirmation
+
+### 8.11 Payment Channels Management Page
+
+Dedicated full-page view accessible from the sidebar.
+
+- DataGrid with column: Name — with Edit and Delete buttons per row
+- "Add Channel" button opens a popup dialog with a Name field
+- Edit pre-fills the dialog to rename; Delete with confirmation
+
+### 8.12 Users Management Page
+
+Dedicated full-page view accessible from the sidebar.
+
+- DataGrid with columns: Username, Status (Active/Inactive) — with Reset PIN and Toggle Active buttons per row
+- "Add User" button opens a popup dialog with Username and PIN fields
+- "Reset PIN" button on each row opens a popup dialog with a new PIN field
+- Currently logged-in user cannot be deactivated
+- Delete not supported — deactivate to preserve FK integrity on old records
+
 ---
 
-## 9. Error Prevention Strategy
+## 9. Navigation Structure
+
+Sidebar navigation (top to bottom):
+1. Dashboard
+2. Print Orders
+3. Haier Jobs
+4. Expenses
+5. Reports
+— separator —
+6. Items
+7. Vendors
+8. Technicians
+9. Expense Categories
+10. Payment Channels
+11. Users
+— separator —
+12. Settings
+13. "Logged in as: {username}"
+
+---
+
+## 10. Error Prevention Strategy
 
 | Risk | Prevention |
 |------|-----------|
@@ -300,7 +382,7 @@ Draft → Confirmed → Sent to Vendor → Ready → Delivered
 
 ---
 
-## 10. PDF Invoice Specification
+## 11. PDF Invoice Specification
 
 Matches the existing Smart Solutions invoice template:
 
@@ -319,7 +401,7 @@ Matches the existing Smart Solutions invoice template:
 
 ---
 
-## 11. Reports
+## 12. Reports
 
 | Report | Description | Filters |
 |--------|-------------|---------|
@@ -331,7 +413,7 @@ Matches the existing Smart Solutions invoice template:
 
 ---
 
-## 12. Design Decisions Log
+## 13. Design Decisions Log
 
 | Item | Decision | Date |
 |------|----------|------|
@@ -344,3 +426,8 @@ Matches the existing Smart Solutions invoice template:
 | Auth bootstrap | Seed default admin/0000 user; owner changes PIN via Settings | 2026-06-10 |
 | Audit trail columns | CreatedById/RecordedById nullable int FK on PrintOrder, HaierJob, Expense, payments, Customer | 2026-06-10 |
 | Window startup | MainWindow opens with WindowState = Maximized | 2026-06-10 |
+| Lookup management | Each lookup type (items, vendors, technicians, expense categories, payment channels, users) gets a dedicated full-page view with sidebar entry; Settings keeps only Business Info | 2026-06-10 |
+| Add/Edit popup style | MaterialDesign `DialogHost` bound to `IsDialogOpen` on ViewModel — no code-behind for popup open/close except PasswordBox reading in Users page | 2026-06-10 |
+| MSIX packaging | Single-project MSIX; sideloading with self-signed cert; `runFullTrust` for SQL Server + LocalAppData access | 2026-06-10 |
+| First-run wizard | Three steps (DB connection, business info, admin PIN); runs before DI host is built; uses raw `SqlConnection` for test | 2026-06-10 |
+| Settings file location | `%LOCALAPPDATA%\SmartSolutions\appsettings.json` — writable under MSIX; `FirstRunData` section removed after first-launch seed | 2026-06-10 |

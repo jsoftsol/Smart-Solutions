@@ -25,6 +25,17 @@ WPF desktop application for Smart Solutions, Peshawar (NTN: 7569020-2) — a pri
 
 ---
 
+## Deployment
+
+- Distributed as `.msix` (single-project MSIX via `<WindowsPackageType>MSIX</WindowsPackageType>` in the `.csproj`).
+- Self-signed cert (`SmartSolutions.pfx` / `.cer`) in `SmartSolutions.App/`. The `.pfx` is gitignored (private key); `.cer` is committed (public, safe to distribute).
+- On first launch: `SettingsManager.IsSetupRequired()` detects missing `%LOCALAPPDATA%\SmartSolutions\appsettings.json` → shows `SetupWizardWindow` before building the DI host.
+- Wizard writes the connection string + `FirstRunData` to LocalAppData. After migrations, `App.xaml.cs` seeds `BusinessInfo` (row Id=1) and admin PIN from `FirstRunData`, then calls `ClearFirstRunData()`.
+- `ServiceConfiguration.cs` clears default config sources and loads exclusively from `SettingsManager.SettingsFilePath`.
+- See `docs/INSTALL.md` for per-PC certificate install steps.
+
+---
+
 ## Solution Structure
 
 ```
@@ -38,7 +49,23 @@ SmartSolutions/
 │   └── Interfaces/
 ├── SmartSolutions.App/           # WPF app — Views, ViewModels, Controls
 │   ├── Views/
+│   │   ├── ItemsView.xaml              # Items management (categories + item names)
+│   │   ├── VendorsView.xaml            # Vendors management
+│   │   ├── TechniciansView.xaml        # Technicians management
+│   │   ├── ExpenseCategoriesView.xaml  # Expense categories management
+│   │   ├── PaymentChannelsView.xaml    # Payment channels management
+│   │   ├── UsersView.xaml              # User accounts management
+│   │   ├── SettingsView.xaml           # Business Info only
+│   │   └── ...
 │   ├── ViewModels/
+│   │   ├── ItemsViewModel.cs
+│   │   ├── VendorsViewModel.cs
+│   │   ├── TechniciansViewModel.cs
+│   │   ├── ExpenseCategoriesViewModel.cs
+│   │   ├── PaymentChannelsViewModel.cs
+│   │   ├── UsersViewModel.cs
+│   │   ├── SettingsViewModel.cs        # Business Info only
+│   │   └── ...
 │   ├── Controls/                 # Reusable UserControls
 │   ├── Converters/
 │   ├── Reports/                  # FastReport .frx templates
@@ -72,13 +99,14 @@ SmartSolutions/
 ## Key Decisions — Do Not Change Without Discussion
 
 ### Nothing hardcoded
-All lookup data lives in the database and is managed by the user via the Settings module:
-- Item categories and item names
-- Vendors
-- Technicians
-- Expense categories
-- Payment channels (Cash, Easypaisa, Bank are defaults — not fixed)
-- Business info (name, NTN, address, phone — used on invoices)
+All lookup data lives in the database and is managed by the user via dedicated sidebar pages:
+- Item categories and item names → **Items page**
+- Vendors → **Vendors page**
+- Technicians → **Technicians page**
+- Expense categories → **Expense Categories page**
+- Payment channels (Cash, Easypaisa, Bank are defaults — not fixed) → **Payment Channels page**
+- Business info (name, NTN, address, phone — used on invoices) → **Settings page**
+- User accounts → **Users page**
 
 Do NOT add string constants, enum values, or hardcoded lists for anything the user interacts with.
 
@@ -96,10 +124,10 @@ Connection string is in `appsettings.json` on each PC. Do not hardcode a server 
 ### Authentication — accountability only, no permissions
 Users log in with username + PIN once per app launch. The session lasts until the app is closed. All users have equal access — there are no roles or permission checks. The sole purpose of auth is stamping `CreatedById` / `RecordedById` on every record so the owner can see who entered what.
 
-- Default user seeded: username `admin`, PIN `0000` (owner should change via Settings after first launch)
+- Default user seeded: username `admin`, PIN `0000` (owner should change after first launch)
 - `LoginWindow` is shown before `MainWindow` at startup; closing it without logging in exits the app
 - `MainWindow` opens with `WindowState = Maximized`
-- User management (add / reset PIN / deactivate) lives in the Settings module
+- User management (add / reset PIN / deactivate) lives in the **Users page** (sidebar), not Settings
 
 ### Partial payments
 Print orders and Haier jobs collect payments over time. Balance = Total Invoiced − Sum(Payments). There is no single "paid/unpaid" boolean — always derive payment status from the payment collection.
