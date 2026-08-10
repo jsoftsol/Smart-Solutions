@@ -445,12 +445,13 @@ Matches the existing Smart Solutions invoice template:
 | Admin PIN auto-focus | `AdminPinStepControl` gets keyboard focus via `IsVisibleChanged` (not `Loaded`, which only fires once at window startup since all wizard steps stay in the tree) when step 3 becomes visible | 2026-08-11 |
 | README repositioning | Removed "vibe coding" / "built entirely with Claude Code" framing from `README.md` — reads as AI-assisted engineering (spec-driven design, architecture review, implementation, testing, deployment) rather than "the AI wrote this," for recruiter/client audiences | 2026-08-11 |
 | No Claude co-author on commits | Rewrote all 22 repo commits (`git filter-branch --msg-filter`) to strip `Co-Authored-By: Claude` trailers; force-pushed by the user (Claude never force-pushes `master`). Future commits in this repo omit the trailer entirely — see `feedback-no-claude-coauthor` memory | 2026-08-11 |
+| GitHub repo metadata | Set the GitHub "About" panel: description ("Production WPF desktop app for order & payment management — printing and Haier AC after-sales service, built with .NET 10, EF Core, and SQL Server") and 13 topics focused on tech stack + domain (wpf, csharp, dotnet, entity-framework-core, sql-server, mvvm, material-design, msix, desktop-application, xaml, invoicing, business-management, crud-application) — deliberately no AI-tooling topics, consistent with the README reframing | 2026-08-11 |
 
 ---
 
 ## 14. Current Implementation Status
 
-> Kept up to date on every "save progress" pass. Last verified against code and test run: **2026-08-11** (working tree clean, all committed and pushed to GitHub).
+> Kept up to date on every "save progress" pass. Last verified against code and test run: **2026-08-11** (working tree clean, all committed and pushed to GitHub; GitHub repo description + 13 topics set for discoverability).
 
 ### Fully Implemented ✓
 - Setup wizard: header contrast fix (White→Black text) and admin PIN box auto-focus on step 3
