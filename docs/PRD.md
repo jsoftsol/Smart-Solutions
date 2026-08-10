@@ -1,10 +1,10 @@
 # Smart Solutions — Record Keeping App
 ## Product Requirements Document (PRD)
 
-**Version:** 2.0 (consolidated)
+**Version:** 2.1 (consolidated)
 **Date:** 2026-08-11
 **Supersedes:** `docs/superpowers/specs/2026-06-09-smart-solutions-design.md` (kept as historical record — see banner at top of that file)
-**Status verified against code:** 2026-08-11 — build clean, 35/35 tests passing
+**Status verified against code:** 2026-08-11 — build clean, 35/35 tests passing, working tree clean (all WIP committed and pushed)
 
 > **For Claude:** This is the single source of truth for product requirements. For "what's the state of the code right now / where do I start reading" instead, see `docs/PROJECT-CONTEXT.md`. When the user says **"save progress"**, update Section 14 (Current Implementation Status) and the Design Decisions Log (Section 13) here — see the workflow documented in `CLAUDE.md`.
 
@@ -442,14 +442,18 @@ Matches the existing Smart Solutions invoice template:
 | First-run wizard | Three steps (DB connection, business info, admin PIN); runs before DI host is built; uses raw `SqlConnection` for test | 2026-06-10 |
 | Settings file location | `%LOCALAPPDATA%\SmartSolutions\appsettings.json` — writable under MSIX; `FirstRunData` section removed after first-launch seed | 2026-06-10 |
 | Documentation consolidation | Merged `docs/superpowers/specs/2026-06-09-smart-solutions-design.md` + `docs/PROJECT-CONTEXT.md` status into this single PRD; established manual "save progress" doc/memory update workflow (see `CLAUDE.md`) | 2026-08-11 |
+| Admin PIN auto-focus | `AdminPinStepControl` gets keyboard focus via `IsVisibleChanged` (not `Loaded`, which only fires once at window startup since all wizard steps stay in the tree) when step 3 becomes visible | 2026-08-11 |
+| README repositioning | Removed "vibe coding" / "built entirely with Claude Code" framing from `README.md` — reads as AI-assisted engineering (spec-driven design, architecture review, implementation, testing, deployment) rather than "the AI wrote this," for recruiter/client audiences | 2026-08-11 |
+| No Claude co-author on commits | Rewrote all 22 repo commits (`git filter-branch --msg-filter`) to strip `Co-Authored-By: Claude` trailers; force-pushed by the user (Claude never force-pushes `master`). Future commits in this repo omit the trailer entirely — see `feedback-no-claude-coauthor` memory | 2026-08-11 |
 
 ---
 
 ## 14. Current Implementation Status
 
-> Kept up to date on every "save progress" pass. Last verified against code and test run: **2026-08-11**.
+> Kept up to date on every "save progress" pass. Last verified against code and test run: **2026-08-11** (working tree clean, all committed and pushed to GitHub).
 
 ### Fully Implemented ✓
+- Setup wizard: header contrast fix (White→Black text) and admin PIN box auto-focus on step 3
 - First-run setup wizard (3-step: DB connection → business info → admin PIN)
 - MSIX packaging with self-signed certificate
 - Login window (PIN-based auth, PBKDF2-SHA256, `LoginWindow` → `MainWindow`)
@@ -467,7 +471,7 @@ Matches the existing Smart Solutions invoice template:
 - Audit trail (`CreatedById`/`RecordedById` on all records, nullable for existing rows)
 
 ### In Progress / Uncommitted
-- `SetupWizardWindow.xaml` / `.xaml.cs` have uncommitted local changes: header text color changed from White to Black, and an empty `AdminPinStep_Loaded` event handler stub was added (no body yet — looks like an in-progress wire-up, not a finished feature). Not yet committed as of 2026-08-11.
+- None — working tree is clean as of 2026-08-11.
 
 ### Known Limitations (deferred, not bugs)
 - Dashboard balance cards hardcode "Cash", "Easypaisa", "Bank" channel names in `DashboardService` — renaming these channels in Settings breaks the cards
@@ -480,9 +484,9 @@ Matches the existing Smart Solutions invoice template:
 - Invoice serial number — auto-increment or manual entry?
 - PDF invoice styling — production-quality letterhead with logo
 
-### Verified Metrics (2026-08-11)
+### Verified Metrics (2026-08-11, re-verified end of session)
 - 16 entities (`SmartSolutions.Data/Entities/`), 8 services (`SmartSolutions.Core/Services/`)
 - 35/35 unit tests passing, build clean (0 errors; 1 pre-existing NuGet version-constraint warning, unrelated to app code)
-- GitHub: https://github.com/jsoftsol/Smart-Solutions
+- GitHub: https://github.com/jsoftsol/Smart-Solutions — `master` HEAD `83ef50c`, 22 commits, all authored solely by Ammad Sarfraz (no Claude co-author trailers), verified directly via GitHub API
 
 For the running session log (what happened each session, in order), see `docs/PROJECT-CONTEXT.md`.
