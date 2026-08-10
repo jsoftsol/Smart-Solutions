@@ -1,7 +1,7 @@
 # Smart Solutions — Record Keeping App
 
 > **Production WPF desktop application** built for Smart Solutions, Peshawar (NTN: 7569020-2) — a printing and Haier AC after-sales service business.
-> Built entirely with **Claude Code** (AI-assisted vibe coding) by a software engineer with 20+ years of experience.
+> Designed and developed using an AI-assisted engineering workflow with **Claude Code** — specification-driven design, architecture review, implementation, testing, and deployment — by a software engineer with 20+ years of experience.
 
 [![.NET 10](https://img.shields.io/badge/.NET-10.0-512BD4)](https://dotnet.microsoft.com/)
 [![WPF](https://img.shields.io/badge/UI-WPF%20%2B%20XAML-0078D4)](https://learn.microsoft.com/en-us/dotnet/desktop/wpf/)
@@ -81,10 +81,10 @@ Item categories, item names, vendors, technicians, expense categories, payment c
 Three-layer separation — no business logic in the UI layer, no EF in the business layer:
 
 ```
-SmartSolutions.Data      17 entities · EF Core migrations · AppDbContext
+SmartSolutions.Data      16 entities · EF Core migrations · AppDbContext
 SmartSolutions.Core       8 services · 10 interfaces · all business logic
 SmartSolutions.App       19 ViewModels · 17 Views · Material Design UI · FastReport templates
-SmartSolutions.Tests     28 unit tests · NSubstitute mocks · in-memory DB
+SmartSolutions.Tests     35 unit tests · NSubstitute mocks · in-memory DB
 ```
 
 **Key patterns:**
@@ -95,27 +95,28 @@ SmartSolutions.Tests     28 unit tests · NSubstitute mocks · in-memory DB
 
 ---
 
-## Built with AI (Claude Code)
+## Engineering Workflow
 
-This project was built using a structured vibe coding workflow with Claude Code:
+This project was built using a structured, specification-driven engineering workflow, with Claude Code as an AI pair-programming accelerator:
 
-1. **Requirements** — described the business problem in natural language
-2. **PRD** — Claude generated a full Product Requirements Document
-3. **Design specs** — each feature designed and approved before any code was written
-4. **Implementation plans** — detailed task-by-task plans reviewed and confirmed
-5. **Code** — implemented by Claude Code, reviewed at each milestone
+1. **Requirements** — business problem captured as a structured Product Requirements Document
+2. **Architecture & design specs** — each feature designed and reviewed before any code was written
+3. **Implementation plans** — detailed, task-by-task plans reviewed and confirmed
+4. **Implementation** — built incrementally, reviewed at every milestone
+5. **Testing** — 35-test xUnit suite (services, validation, connection handling) kept green throughout
+6. **Deployment** — MSIX packaging, first-run wizard, per-PC LAN configuration
 
 The full paper trail is in this repo — every decision documented before it was built:
 
 | Artifact | Link |
 |----------|------|
-| Product Requirements Document | [`docs/superpowers/specs/2026-06-09-smart-solutions-design.md`](docs/superpowers/specs/2026-06-09-smart-solutions-design.md) |
+| Product Requirements Document | [`docs/PRD.md`](docs/PRD.md) |
 | Auth & Startup Design | [`docs/superpowers/specs/2026-06-10-auth-startup-design.md`](docs/superpowers/specs/2026-06-10-auth-startup-design.md) |
 | MSIX & First-Run Wizard Design | [`docs/superpowers/specs/2026-06-10-msix-firstrun-design.md`](docs/superpowers/specs/2026-06-10-msix-firstrun-design.md) |
 | Full App Implementation Plan | [`docs/superpowers/plans/2026-06-09-smart-solutions-full-app.md`](docs/superpowers/plans/2026-06-09-smart-solutions-full-app.md) |
 | Management Pages Plan | [`docs/superpowers/plans/2026-06-10-dedicated-management-pages.md`](docs/superpowers/plans/2026-06-10-dedicated-management-pages.md) |
 
-> Built by a software engineer with 20+ years of experience, using Claude Code as a development accelerator — going from idea to production-ready app with every spec reviewed and approved before a line of code was written.
+> Designed and built by a software engineer with 20+ years of experience, using Claude Code as a development accelerator — going from idea to production-ready app with every spec reviewed and approved before a line of code was written.
 
 ---
 
