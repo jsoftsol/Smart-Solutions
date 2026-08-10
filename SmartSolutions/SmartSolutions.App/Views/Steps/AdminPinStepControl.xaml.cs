@@ -24,4 +24,9 @@ public partial class AdminPinStepControl : UserControl
         PinBox.Password        = "";
         ConfirmPinBox.Password = "";
     }
+
+    public void FocusPinInput()
+    {
+        Dispatcher.BeginInvoke(new System.Action(() => PinBox.Focus()), System.Windows.Threading.DispatcherPriority.Input);
+    }
 }

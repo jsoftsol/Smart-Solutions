@@ -20,4 +20,14 @@ public partial class SetupWizardWindow : Window
         if (DataContext is SetupWizardViewModel vm)
             vm.FinishWithSkip();
     }
+
+    // AdminPinStepControl stays in the visual tree for the whole wizard (visibility toggled by
+    // CurrentStep, not swapped in via a DataTemplate), so Window.Loaded only fires once at
+    // startup — before the user ever reaches step 3. IsVisibleChanged fires each time the step
+    // is actually shown, which is when the PIN box should receive focus.
+    private void AdminPinStep_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+    {
+        if ((bool)e.NewValue)
+            AdminPinStep.FocusPinInput();
+    }
 }

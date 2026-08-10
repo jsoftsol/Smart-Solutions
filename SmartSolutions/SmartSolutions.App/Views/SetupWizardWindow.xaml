@@ -24,9 +24,9 @@
         <Border Grid.Row="0" Background="{DynamicResource PrimaryHueMidBrush}" Padding="24,18">
             <StackPanel>
                 <TextBlock Text="Smart Solutions"
-                           Foreground="White" FontWeight="Bold" FontSize="20" />
+                           Foreground="Black" FontWeight="Bold" FontSize="20" />
                 <TextBlock Text="First-Time Setup"
-                           Foreground="White" Opacity="0.85" FontSize="13" Margin="0,2,0,0" />
+                           Foreground="Black" Opacity="0.85" FontSize="13" Margin="0,2,0,0" />
             </StackPanel>
         </Border>
 
@@ -125,7 +125,8 @@
                 <steps:BusinessInfoStepControl
                     Visibility="{Binding CurrentStep, Converter={StaticResource EqualToVisibility}, ConverterParameter=2}" />
                 <steps:AdminPinStepControl x:Name="AdminPinStep"
-                    Visibility="{Binding CurrentStep, Converter={StaticResource EqualToVisibility}, ConverterParameter=3}" />
+                    Visibility="{Binding CurrentStep, Converter={StaticResource EqualToVisibility}, ConverterParameter=3}"
+                    IsVisibleChanged="AdminPinStep_IsVisibleChanged" />
             </Grid>
         </ScrollViewer>
 
