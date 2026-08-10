@@ -4,7 +4,8 @@
 
 WPF desktop application for Smart Solutions, Peshawar (NTN: 7569020-2) — a printing and Haier AC after-sales service business. Replaces manual Excel tracking with validated, guided data entry, PDF invoice generation, and financial reporting.
 
-**Full PRD:** `docs/superpowers/specs/2026-06-09-smart-solutions-design.md`
+**Full PRD:** `docs/PRD.md` — requirements, data model, and current implementation status (single source of truth; older `docs/superpowers/specs/2026-06-09-smart-solutions-design.md` is superseded/historical)
+**Session context / "what's the code state right now":** `docs/PROJECT-CONTEXT.md`
 **Auth & Startup Design:** `docs/superpowers/specs/2026-06-10-auth-startup-design.md`
 
 ---
@@ -160,8 +161,15 @@ These are requirements, not optional:
 
 ## Open Items (confirm with owner before implementing)
 
-- Haier job fields — may need additional fields specific to Haier's system
-- Dimension units — feet vs. inches vs. user-selectable
-- Rate calculation — some items (e.g., cards) may be priced per piece, not per sqft
-- Transportation charges — fixed fee, per-order, or calculated?
-- Invoice serial number — auto-increment or manual?
+See `docs/PRD.md` Section 14 ("Current Implementation Status → Open Items") for the current list — kept there as the single copy so it doesn't drift out of sync with this file.
+
+---
+
+## Session Workflow — Saving Progress
+
+The user triggers documentation/memory updates manually by saying **"save progress"** (or a clear equivalent, e.g. "wrap up this session"). There is no automated hook for this — do not assume it happens on every commit or every session end. When it's triggered, do this update pass:
+
+1. **`docs/PRD.md`** — update Section 14 (Current Implementation Status): move newly finished work into "Fully Implemented", update "In Progress / Uncommitted" from actual `git status`/`git diff`, and refresh "Verified Metrics" (entity/service counts, test pass count — re-run `dotnet test` rather than assuming). Add a row to the Section 13 Design Decisions Log for any non-obvious decision made this session.
+2. **`docs/PROJECT-CONTEXT.md`** — append a dated entry to the Session Log at the bottom describing what happened this session (features built, bugs fixed, commits made).
+3. **Memory (both locations — see `feedback-memory-location` memory)** — update the project-local `memory/` folder in this repo (untracked in git) *and* the harness's global auto-memory folder for this project. Update the relevant `project_*` memory file with current status; add a new `feedback_*` memory only if the user gave new durable guidance this session. Keep `MEMORY.md` in both locations as a short index, not a content dump.
+4. Do not invent progress — base every update on what actually happened this session (commits made, code read, tests run), not on assumptions.

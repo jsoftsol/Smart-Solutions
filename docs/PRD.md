@@ -1,9 +1,12 @@
 # Smart Solutions — Record Keeping App
 ## Product Requirements Document (PRD)
-**Date:** 2026-06-09
-**Version:** 1.2 (dedicated management pages added 2026-06-10)
 
-> **⚠ Superseded 2026-08-11.** This document has been merged into `docs/PRD.md`, which is now the maintained source of truth (product requirements + current implementation status, kept up to date on every "save progress" pass). This file is kept as a historical record of the original brainstorming/design session and is no longer updated.
+**Version:** 2.0 (consolidated)
+**Date:** 2026-08-11
+**Supersedes:** `docs/superpowers/specs/2026-06-09-smart-solutions-design.md` (kept as historical record — see banner at top of that file)
+**Status verified against code:** 2026-08-11 — build clean, 35/35 tests passing
+
+> **For Claude:** This is the single source of truth for product requirements. For "what's the state of the code right now / where do I start reading" instead, see `docs/PROJECT-CONTEXT.md`. When the user says **"save progress"**, update Section 14 (Current Implementation Status) and the Design Decisions Log (Section 13) here — see the workflow documented in `CLAUDE.md`.
 
 ---
 
@@ -189,6 +192,13 @@ Desktop record-keeping application for **Smart Solutions**, Peshawar, Pakistan (
 | ChannelId | FK | |
 | Date | date | |
 
+### 7.10 BusinessInfo & AppUser
+
+| Table | Notes |
+|-------|-------|
+| BusinessInfo | Singleton row (Id=1). Name, NTN, address, phone — used on invoices and set via the Settings page / first-run wizard. |
+| AppUser | Username (unique), PinHash (PBKDF2-SHA256, 100k iterations), IsActive. `CreatedById`/`RecordedById` FKs on transactional entities reference this table. |
+
 ---
 
 ## 8. Modules & Features
@@ -227,7 +237,7 @@ Desktop record-keeping application for **Smart Solutions**, Peshawar, Pakistan (
 **Invoice PDF:**
 - Generate from any order
 - Print to attached printer
-- Matches Smart Solutions letterhead (see Section 10)
+- Matches Smart Solutions letterhead (see Section 11)
 
 **List View:**
 - Columns: Order #, Date, Customer, Total, Paid, Balance, Status, Expected Date
@@ -304,16 +314,12 @@ Dedicated full-page view accessible from the sidebar. Manages item categories an
 
 ### 8.8 Vendors Management Page
 
-Dedicated full-page view accessible from the sidebar.
-
 - DataGrid with columns: Name, Phone, Notes — with Edit and Delete buttons per row
 - "Add Vendor" button opens a popup dialog with Name (required), Phone, Notes fields
 - Edit pre-fills the dialog; Save updates the record
 - Delete with confirmation
 
 ### 8.9 Technicians Management Page
-
-Dedicated full-page view accessible from the sidebar.
 
 - DataGrid with columns: Name, Phone — with Edit and Delete buttons per row
 - "Add Technician" button opens a popup dialog with Name (required) and Phone fields
@@ -322,15 +328,11 @@ Dedicated full-page view accessible from the sidebar.
 
 ### 8.10 Expense Categories Management Page
 
-Dedicated full-page view accessible from the sidebar.
-
 - DataGrid with column: Name — with Edit and Delete buttons per row
 - "Add Category" button opens a popup dialog with a Name field
 - Edit pre-fills the dialog to rename; Delete with confirmation
 
 ### 8.11 Payment Channels Management Page
-
-Dedicated full-page view accessible from the sidebar.
 
 - DataGrid with column: Name — with Edit and Delete buttons per row
 - "Add Channel" button opens a popup dialog with a Name field
@@ -338,13 +340,16 @@ Dedicated full-page view accessible from the sidebar.
 
 ### 8.12 Users Management Page
 
-Dedicated full-page view accessible from the sidebar.
-
 - DataGrid with columns: Username, Status (Active/Inactive) — with Reset PIN and Toggle Active buttons per row
 - "Add User" button opens a popup dialog with Username and PIN fields
 - "Reset PIN" button on each row opens a popup dialog with a new PIN field
 - Currently logged-in user cannot be deactivated
 - Delete not supported — deactivate to preserve FK integrity on old records
+
+### 8.13 Customers Management Page
+
+- DataGrid with columns: Name, Phone, Address, Notes — with Edit and Delete buttons per row
+- "Add Customer" button opens a popup dialog; Delete is FK-safe (friendly error if the customer has orders/jobs)
 
 ---
 
@@ -357,15 +362,16 @@ Sidebar navigation (top to bottom):
 4. Expenses
 5. Reports
 — separator —
-6. Items
-7. Vendors
-8. Technicians
-9. Expense Categories
-10. Payment Channels
-11. Users
+6. Customers
+7. Items
+8. Vendors
+9. Technicians
+10. Expense Categories
+11. Payment Channels
+12. Users
 — separator —
-12. Settings
-13. "Logged in as: {username}"
+13. Settings
+14. "Logged in as: {username}"
 
 ---
 
@@ -401,6 +407,8 @@ Matches the existing Smart Solutions invoice template:
 - **Footer:** Subtotal, Total Paid Amount (PKR format)
 - **Bottom:** Phone numbers, email, shop address
 
+**Status:** the `.frx` template is currently a minimal stub — production letterhead styling is not done (see Section 14).
+
 ---
 
 ## 12. Reports
@@ -433,3 +441,48 @@ Matches the existing Smart Solutions invoice template:
 | MSIX packaging | Single-project MSIX; sideloading with self-signed cert; `runFullTrust` for SQL Server + LocalAppData access | 2026-06-10 |
 | First-run wizard | Three steps (DB connection, business info, admin PIN); runs before DI host is built; uses raw `SqlConnection` for test | 2026-06-10 |
 | Settings file location | `%LOCALAPPDATA%\SmartSolutions\appsettings.json` — writable under MSIX; `FirstRunData` section removed after first-launch seed | 2026-06-10 |
+| Documentation consolidation | Merged `docs/superpowers/specs/2026-06-09-smart-solutions-design.md` + `docs/PROJECT-CONTEXT.md` status into this single PRD; established manual "save progress" doc/memory update workflow (see `CLAUDE.md`) | 2026-08-11 |
+
+---
+
+## 14. Current Implementation Status
+
+> Kept up to date on every "save progress" pass. Last verified against code and test run: **2026-08-11**.
+
+### Fully Implemented ✓
+- First-run setup wizard (3-step: DB connection → business info → admin PIN)
+- MSIX packaging with self-signed certificate
+- Login window (PIN-based auth, PBKDF2-SHA256, `LoginWindow` → `MainWindow`)
+- Main navigation shell (sidebar, opens maximized)
+- Dashboard (KPI summary cards)
+- Print Orders — list, detail, lines (per-sqft + per-piece), payments, vendor assignment
+- Haier Jobs — list, detail, payments, technician assignment
+- Expenses — list, add/edit/delete with categories and payment channels
+- Reports view (basic financial summaries)
+- Customers management page (add/edit/delete, address + notes)
+- Items management page (categories left panel + item names right panel)
+- Vendors, Technicians, Expense Categories, Payment Channels management pages
+- Users management page (add user, reset PIN, deactivate/reactivate)
+- Settings page (business info: name, NTN, address, phone)
+- Audit trail (`CreatedById`/`RecordedById` on all records, nullable for existing rows)
+
+### In Progress / Uncommitted
+- `SetupWizardWindow.xaml` / `.xaml.cs` have uncommitted local changes: header text color changed from White to Black, and an empty `AdminPinStep_Loaded` event handler stub was added (no body yet — looks like an in-progress wire-up, not a finished feature). Not yet committed as of 2026-08-11.
+
+### Known Limitations (deferred, not bugs)
+- Dashboard balance cards hardcode "Cash", "Easypaisa", "Bank" channel names in `DashboardService` — renaming these channels in Settings breaks the cards
+- `ReportsViewModel` queries EF directly (bypasses service layer) for some report queries
+- Invoice `.frx` FastReport template is a minimal stub — needs FastReport Designer work for production letterhead
+
+### Open Items (confirm with owner before implementing)
+- Haier job fields — may need additional fields specific to Haier's warranty system
+- Transportation charges — fixed fee, per-order, or calculated separately?
+- Invoice serial number — auto-increment or manual entry?
+- PDF invoice styling — production-quality letterhead with logo
+
+### Verified Metrics (2026-08-11)
+- 16 entities (`SmartSolutions.Data/Entities/`), 8 services (`SmartSolutions.Core/Services/`)
+- 35/35 unit tests passing, build clean (0 errors; 1 pre-existing NuGet version-constraint warning, unrelated to app code)
+- GitHub: https://github.com/jsoftsol/Smart-Solutions
+
+For the running session log (what happened each session, in order), see `docs/PROJECT-CONTEXT.md`.

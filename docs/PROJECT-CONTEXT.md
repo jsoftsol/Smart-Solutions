@@ -1,6 +1,6 @@
 # Smart Solutions — Project Context
 
-> **For Claude:** Read this file at the start of each session to restore full project context without re-exploring the codebase. Update the Session Log at the end of each session.
+> **For Claude:** Read this file at the start of each session to restore full project context without re-exploring the codebase. For product requirements and detailed current status, see `docs/PRD.md`. Update the Session Log at the end of each session when the user says "save progress" (see `CLAUDE.md` → "Session Workflow — Saving Progress").
 
 ---
 
@@ -17,11 +17,13 @@ Smart Solutions is a production WPF desktop application (.NET 10, C#) for a prin
 ## Solution Structure
 
 ```
-SmartSolutions.Data/        EF Core DbContext, 17 entities, migrations
+SmartSolutions.Data/        EF Core DbContext, 16 entities, migrations
 SmartSolutions.Core/        8 services, 10 interfaces, all business logic
 SmartSolutions.App/         19 ViewModels, 17 Views, WPF XAML, FastReport templates
-SmartSolutions.Tests/       28 unit tests, xUnit + NSubstitute + FluentAssertions
+SmartSolutions.Tests/       35 unit tests, xUnit + NSubstitute + FluentAssertions
 ```
+
+(Counts verified against code on 2026-08-11 — re-verify before trusting on older reads.)
 
 Key file locations within `SmartSolutions/SmartSolutions.App/`:
 - Views: `Views/*.xaml` and `Views/Steps/*.xaml` (wizard steps)
@@ -33,7 +35,7 @@ Key file locations within `SmartSolutions/SmartSolutions.App/`:
 
 ---
 
-## Entities (17 tables)
+## Entities (16 tables)
 
 | Domain | Entities |
 |--------|---------|
@@ -97,7 +99,7 @@ All services use `IDbContextFactory<AppDbContext>` — never a shared singleton 
 - Users management page (add user, reset PIN, deactivate/reactivate)
 - Settings page (business info: name, NTN, address, phone)
 - Audit trail (`CreatedById`/`RecordedById` on all records, nullable for existing rows)
-- 28/28 unit tests passing
+- 35/35 unit tests passing (verified 2026-08-11)
 
 ### Known Limitations (deferred, not bugs)
 - Dashboard balance cards hardcode "Cash", "Easypaisa", "Bank" channel names in `DashboardService` — renaming these channels in Settings breaks the cards
@@ -121,6 +123,7 @@ Dashboard → Print Orders → Haier Jobs → Expenses → Reports → [separato
 ## Session Log
 
 ```
+2026-08-11 — Documentation consolidation: created docs/PRD.md (merges old spec + this file's status into one maintained PRD), marked docs/superpowers/specs/2026-06-09-smart-solutions-design.md as superseded/historical, added "Session Workflow — Saving Progress" section to CLAUDE.md (manual trigger: user says "save progress"), synced memory/ (local + global) with the new workflow. Verified against code: 16 entities, 8 services, 35/35 tests passing, build clean. Noted uncommitted WIP in SetupWizardWindow.xaml/.xaml.cs (header text color White→Black, empty AdminPinStep_Loaded handler stub — not finished).
 2026-06-10 — GitHub portfolio setup: README.md, PROJECT-CONTEXT.md, screenshots; submodule flattened into single repo; pushed to https://github.com/jsoftsol/Smart-Solutions
 2026-06-10 — Startup crash fixed (DatabaseStepControl.xaml: UseSqlAuth needed Mode=OneWay)
 2026-06-10 — MSIX packaging + first-run setup wizard complete; 28/28 tests passing
