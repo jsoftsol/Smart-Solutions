@@ -448,12 +448,13 @@ Matches the existing Smart Solutions invoice template:
 | GitHub repo metadata | Set the GitHub "About" panel: description ("Production WPF desktop app for order & payment management — printing and Haier AC after-sales service, built with .NET 10, EF Core, and SQL Server") and 13 topics focused on tech stack + domain (wpf, csharp, dotnet, entity-framework-core, sql-server, mvvm, material-design, msix, desktop-application, xaml, invoicing, business-management, crud-application) — deliberately no AI-tooling topics, consistent with the README reframing | 2026-08-11 |
 | Memory storage location | Moved from dual-write (project-local `memory/` + harness global auto-memory folder) to **project-local only**. Global folder deleted after merging its content into local files. Trades away session-start auto-load of memory (harness only auto-loads the global folder) for keeping everything under the project directory, per explicit user preference | 2026-08-11 |
 | Memory auto-load restored | `autoMemoryDirectory`/`autoMemoryEnabled` set in `.claude/settings.local.json` (gitignored) to point session-start auto-load at this repo's `memory/` folder instead of the harness global location — `autoMemoryDirectory` is only ignored when set in the checked-in `settings.json`, not `settings.local.json`. Local-only storage and auto-load are both active now; the earlier tradeoff no longer applies | 2026-08-11 |
+| `memory/` added to `.gitignore` | Added a root-level `.gitignore` (repo had none) excluding `memory/`, so a future broad `git add` can't accidentally commit it. `memory/` was already untracked by convention; this makes that permanent instead of relying on discipline | 2026-08-11 |
 
 ---
 
 ## 14. Current Implementation Status
 
-> Kept up to date on every "save progress" pass. Last verified against code and test run: **2026-08-11** (35/35 tests re-run this pass; no source changes since last commit — CLAUDE.md and memory/ updated again this pass, not yet committed).
+> Kept up to date on every "save progress" pass. Last verified against code: **2026-08-11** (build clean, 0 errors; test run could not be re-verified this pass — see Verified Metrics note. No source changes this pass, git-hygiene only).
 
 ### Fully Implemented ✓
 - Setup wizard: header contrast fix (White→Black text) and admin PIN box auto-focus on step 3
@@ -474,8 +475,7 @@ Matches the existing Smart Solutions invoice template:
 - Audit trail (`CreatedById`/`RecordedById` on all records, nullable for existing rows)
 
 ### In Progress / Uncommitted
-- `CLAUDE.md` — Session Workflow memory step updated to describe auto-load via `settings.local.json` (not yet committed)
-- `memory/` (untracked, by design) — sole memory location; `.claude/settings.local.json` (gitignored, not committed by design) now points harness auto-load at it
+- None — working tree clean, all prior WIP committed and pushed (root `.gitignore` added and pushed this pass)
 
 ### Known Limitations (deferred, not bugs)
 - Dashboard balance cards hardcode "Cash", "Easypaisa", "Bank" channel names in `DashboardService` — renaming these channels in Settings breaks the cards
@@ -488,9 +488,9 @@ Matches the existing Smart Solutions invoice template:
 - Invoice serial number — auto-increment or manual entry?
 - PDF invoice styling — production-quality letterhead with logo
 
-### Verified Metrics (2026-08-11, re-verified — memory auto-load pass, no code changes)
+### Verified Metrics (2026-08-11, re-verified — .gitignore pass, no source changes)
 - 16 entities (`SmartSolutions.Data/Entities/`), 8 services (`SmartSolutions.Core/Services/`)
-- 35/35 unit tests passing, build clean (0 errors; 1 pre-existing NuGet version-constraint warning, unrelated to app code)
-- GitHub: https://github.com/jsoftsol/Smart-Solutions — `master` HEAD `83ef50c`, 22 commits, all authored solely by Ammad Sarfraz (no Claude co-author trailers), verified directly via GitHub API
+- Build clean (0 errors; 1 pre-existing NuGet version-constraint warning, unrelated to app code). `dotnet test` could not run this pass: a local Windows Application Control policy blocked loading the freshly-built `SmartSolutions.Tests.dll` (`FileLoadException 0x800711C7`) — a machine/environment issue, not a code regression (no source changed this session). Last confirmed 35/35 passing: 2026-08-11 (memory auto-load pass, prior to this one)
+- GitHub: https://github.com/jsoftsol/Smart-Solutions — `master` HEAD `4a920c4`, 27 commits, all authored solely by Ammad Sarfraz (no Claude co-author trailers)
 
 For the running session log (what happened each session, in order), see `docs/PROJECT-CONTEXT.md`.
