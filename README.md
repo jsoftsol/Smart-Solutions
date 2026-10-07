@@ -1,14 +1,13 @@
 # Smart Solutions: Record Keeping App
 
 > **Production WPF desktop application** built for Smart Solutions, Peshawar (NTN: 7569020-2), a printing and Haier AC after-sales service business.
-> Designed and developed using an AI-assisted engineering workflow with **Claude Code** (specification-driven design, architecture review, implementation, testing, and deployment), by a software engineer with 20+ years of experience.
+> Designed and developed with specification-driven design, architecture review, implementation, testing, and deployment, by a software engineer with 20+ years of experience.
 
 [![.NET 10](https://img.shields.io/badge/.NET-10.0-512BD4)](https://dotnet.microsoft.com/)
 [![WPF](https://img.shields.io/badge/UI-WPF%20%2B%20XAML-0078D4)](https://learn.microsoft.com/en-us/dotnet/desktop/wpf/)
 [![Material Design](https://img.shields.io/badge/Theme-Material%20Design-757575)](https://materialdesigninxaml.net/)
 [![SQL Server](https://img.shields.io/badge/DB-SQL%20Server-CC2927)](https://www.microsoft.com/en-us/sql-server/)
 [![MSIX](https://img.shields.io/badge/Packaging-MSIX-00BCF2)](https://learn.microsoft.com/en-us/windows/msix/)
-[![Built with Claude Code](https://img.shields.io/badge/Built%20with-Claude%20Code-D97706)](https://claude.ai/code)
 
 ---
 
@@ -97,7 +96,7 @@ SmartSolutions.Tests     35 unit tests · NSubstitute mocks · in-memory DB
 
 ## Engineering Workflow
 
-This project was built using a structured, specification-driven engineering workflow, with Claude Code as an AI pair-programming accelerator:
+This project was built using a structured, specification-driven engineering workflow:
 
 1. **Requirements**: business problem captured as a structured Product Requirements Document
 2. **Architecture & design specs**: each feature designed and reviewed before any code was written
@@ -106,17 +105,13 @@ This project was built using a structured, specification-driven engineering work
 5. **Testing**: 35-test xUnit suite (services, validation, connection handling) kept green throughout
 6. **Deployment**: MSIX packaging, first-run wizard, per-PC LAN configuration
 
-The full paper trail is in this repo, every decision documented before it was built:
+The product requirements are documented in this repo:
 
 | Artifact | Link |
 |----------|------|
 | Product Requirements Document | [`docs/PRD.md`](docs/PRD.md) |
-| Auth & Startup Design | [`docs/superpowers/specs/2026-06-10-auth-startup-design.md`](docs/superpowers/specs/2026-06-10-auth-startup-design.md) |
-| MSIX & First-Run Wizard Design | [`docs/superpowers/specs/2026-06-10-msix-firstrun-design.md`](docs/superpowers/specs/2026-06-10-msix-firstrun-design.md) |
-| Full App Implementation Plan | [`docs/superpowers/plans/2026-06-09-smart-solutions-full-app.md`](docs/superpowers/plans/2026-06-09-smart-solutions-full-app.md) |
-| Management Pages Plan | [`docs/superpowers/plans/2026-06-10-dedicated-management-pages.md`](docs/superpowers/plans/2026-06-10-dedicated-management-pages.md) |
 
-> Designed and built by a software engineer with 20+ years of experience, using Claude Code as a development accelerator, going from idea to production-ready app with every spec reviewed and approved before a line of code was written.
+> Designed and built by a software engineer with 20+ years of experience, going from idea to production-ready app with every spec reviewed and approved before a line of code was written.
 
 ---
 

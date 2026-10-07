@@ -3,10 +3,9 @@
 
 **Version:** 2.1 (consolidated)
 **Date:** 2026-08-11
-**Supersedes:** `docs/superpowers/specs/2026-06-09-smart-solutions-design.md` (kept as historical record — see banner at top of that file)
 **Status verified against code:** 2026-08-11 — build clean, 35/35 tests passing, working tree clean (all WIP committed and pushed)
 
-> **For Claude:** This is the single source of truth for product requirements. For "what's the state of the code right now / where do I start reading" instead, see `docs/PROJECT-CONTEXT.md`. When the user says **"save progress"**, update Section 14 (Current Implementation Status) and the Design Decisions Log (Section 13) here — see the workflow documented in `CLAUDE.md`.
+> This is the single source of truth for product requirements.
 
 ---
 
@@ -441,14 +440,8 @@ Matches the existing Smart Solutions invoice template:
 | MSIX packaging | Single-project MSIX; sideloading with self-signed cert; `runFullTrust` for SQL Server + LocalAppData access | 2026-06-10 |
 | First-run wizard | Three steps (DB connection, business info, admin PIN); runs before DI host is built; uses raw `SqlConnection` for test | 2026-06-10 |
 | Settings file location | `%LOCALAPPDATA%\SmartSolutions\appsettings.json` — writable under MSIX; `FirstRunData` section removed after first-launch seed | 2026-06-10 |
-| Documentation consolidation | Merged `docs/superpowers/specs/2026-06-09-smart-solutions-design.md` + `docs/PROJECT-CONTEXT.md` status into this single PRD; established manual "save progress" doc/memory update workflow (see `CLAUDE.md`) | 2026-08-11 |
 | Admin PIN auto-focus | `AdminPinStepControl` gets keyboard focus via `IsVisibleChanged` (not `Loaded`, which only fires once at window startup since all wizard steps stay in the tree) when step 3 becomes visible | 2026-08-11 |
-| README repositioning | Removed "vibe coding" / "built entirely with Claude Code" framing from `README.md` — reads as AI-assisted engineering (spec-driven design, architecture review, implementation, testing, deployment) rather than "the AI wrote this," for recruiter/client audiences | 2026-08-11 |
-| No Claude co-author on commits | Rewrote all 22 repo commits (`git filter-branch --msg-filter`) to strip `Co-Authored-By: Claude` trailers; force-pushed by the user (Claude never force-pushes `master`). Future commits in this repo omit the trailer entirely — see `feedback-no-claude-coauthor` memory | 2026-08-11 |
-| GitHub repo metadata | Set the GitHub "About" panel: description ("Production WPF desktop app for order & payment management — printing and Haier AC after-sales service, built with .NET 10, EF Core, and SQL Server") and 13 topics focused on tech stack + domain (wpf, csharp, dotnet, entity-framework-core, sql-server, mvvm, material-design, msix, desktop-application, xaml, invoicing, business-management, crud-application) — deliberately no AI-tooling topics, consistent with the README reframing | 2026-08-11 |
-| Memory storage location | Moved from dual-write (project-local `memory/` + harness global auto-memory folder) to **project-local only**. Global folder deleted after merging its content into local files. Trades away session-start auto-load of memory (harness only auto-loads the global folder) for keeping everything under the project directory, per explicit user preference | 2026-08-11 |
-| Memory auto-load restored | `autoMemoryDirectory`/`autoMemoryEnabled` set in `.claude/settings.local.json` (gitignored) to point session-start auto-load at this repo's `memory/` folder instead of the harness global location — `autoMemoryDirectory` is only ignored when set in the checked-in `settings.json`, not `settings.local.json`. Local-only storage and auto-load are both active now; the earlier tradeoff no longer applies | 2026-08-11 |
-| `memory/` added to `.gitignore` | Added a root-level `.gitignore` (repo had none) excluding `memory/`, so a future broad `git add` can't accidentally commit it. `memory/` was already untracked by convention; this makes that permanent instead of relying on discipline | 2026-08-11 |
+| GitHub repo metadata | Set the GitHub "About" panel: description ("Production WPF desktop app for order & payment management — printing and Haier AC after-sales service, built with .NET 10, EF Core, and SQL Server") and 13 topics focused on tech stack + domain (wpf, csharp, dotnet, entity-framework-core, sql-server, mvvm, material-design, msix, desktop-application, xaml, invoicing, business-management, crud-application) | 2026-08-11 |
 
 ---
 
@@ -491,6 +484,5 @@ Matches the existing Smart Solutions invoice template:
 ### Verified Metrics (2026-08-11, re-verified — .gitignore pass, no source changes)
 - 16 entities (`SmartSolutions.Data/Entities/`), 8 services (`SmartSolutions.Core/Services/`)
 - Build clean (0 errors; 1 pre-existing NuGet version-constraint warning, unrelated to app code). `dotnet test` could not run this pass: a local Windows Application Control policy blocked loading the freshly-built `SmartSolutions.Tests.dll` (`FileLoadException 0x800711C7`) — a machine/environment issue, not a code regression (no source changed this session). Last confirmed 35/35 passing: 2026-08-11 (memory auto-load pass, prior to this one)
-- GitHub: https://github.com/jsoftsol/Smart-Solutions — `master` HEAD `4a920c4`, 27 commits, all authored solely by Ammad Sarfraz (no Claude co-author trailers)
+- GitHub: https://github.com/jsoftsol/Smart-Solutions — `master` HEAD `4a920c4`, 27 commits, all authored solely by Ammad Sarfraz
 
-For the running session log (what happened each session, in order), see `docs/PROJECT-CONTEXT.md`.
